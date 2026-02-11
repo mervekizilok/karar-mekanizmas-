@@ -25,17 +25,16 @@ class CBF_IHA:
         self.komut_dogrulama = True 
         
         self.ucus_modu = "Normal"
-        self.kara_kutu = []         # Blackbox kayıtları [cite: 13]
-
+        self.kara_kutu = []         # Blackbox kayıtları 
     def guven_skoru_hesapla(self):
-        """Bütünsel değerlendirme yapan CBF algoritması [cite: 87]"""
+        """Bütünsel değerlendirme yapan CBF algoritması"""
         skor = 100
         
         # Fiziksel Limitler
         if abs(self.roll) > 30 or abs(self.pitch) > 30: skor -= 15
         if self.titresim > 70: skor -= 10 
         
-        # Haberleşme ve Sensör Tutarlılığı [cite: 36, 38]
+        # Haberleşme ve Sensör Tutarlılığı 
         if self.sensor_tutarliligi < 95: skor -= 20 
         if self.gecikme > 200: skor -= 15 
         
@@ -44,28 +43,28 @@ class CBF_IHA:
         if self.islemci_yuku > 90: skor -= 30 
         if not self.komut_dogrulama: skor -= 40 
         
-        # Donanımsal Kritik Hata [cite: 73]
+        # Donanımsal Kritik Hata 
         if self.batarya < 20: skor -= 40 
 
         return max(skor, 0)
 
     def ucus_modu_belirle(self, skor):
-        """Güven skoruna göre dinamik davranış kararı [cite: 48]"""
+        """Güven skoruna göre dinamik davranış kararı """
         if skor >= 80:
-            self.ucus_modu = "Normal Uçuş" # [cite: 51]
-        elif 50 <= skor < 80:
-            self.ucus_modu = "Temkinli Mod" # [cite: 49]
+            self.ucus_modu = "Normal Uçuş" 
+                    elif 50 <= skor < 80:
+            self.ucus_modu = "Temkinli Mod" 
         else:
-            self.ucus_modu = "Güvenli Mod (FAIL-SAFE)" # [cite: 50, 62]
+            self.ucus_modu = "Güvenli Mod (FAIL-SAFE)" 
 
     def gorev_dongusu(self, sure=30):
-        """Gerçek zamanlı uçuş ve siber güvenlik simülasyonu [cite: 116]"""
+        """Gerçek zamanlı uçuş ve siber güvenlik simülasyonu """
         print(f"\n--- {self.isim} SİSTEMİ BAŞLATILDI ---")
         for saniye in range(sure):
             
             # --- Kalibrasyon ve Veri Simülasyonu ---
             if saniye == 0:
-                # 0. Saniyede sistemin temiz başlamasını garanti ediyoruz
+            
                 self.roll, self.pitch, self.yaw = 0.0, 0.0, 0.0
                 self.titresim, self.gecikme, self.islemci_yuku = 15.0, 20, 15
                 self.sensor_tutarliligi = 100
@@ -91,7 +90,7 @@ class CBF_IHA:
             guncel_skor = self.guven_skoru_hesapla()
             self.ucus_modu_belirle(guncel_skor)
 
-            # --- Terminal Çıktısı (Senin istediğin orijinal format) ---
+            # --- Terminal Çıktısı ---
             print(f"\n[Saniye {saniye}] >>> MOD: {self.ucus_modu} | GÜVEN SKORU: {guncel_skor}")
             print(f"   FİZİKSEL: Roll: {self.roll:.1f}° | Pitch: {self.pitch:.1f}° | Titreşim: %{self.titresim:.1f}")
             
@@ -118,7 +117,7 @@ class CBF_IHA:
         plt.plot(df["sn"], df["skor"], label='Dinamik Güven Skoru', color='blue', linewidth=2)
         plt.axhline(y=50, color='red', linestyle='--', label='Kritik Eşik (Fail-Safe)')
         
-        # Siber olayları işaretle
+        
         saldiri_anlari = df[df["siber_olay"] == True]
         plt.scatter(saldiri_anlari["sn"], saldiri_anlari["skor"], color='orange', label='Siber Tehdit Tespiti', zorder=5)
 
@@ -129,7 +128,7 @@ class CBF_IHA:
         plt.grid(True, alpha=0.3)
         plt.show()
 
-# --- ÇALIŞTIR ---
+
 cbf_drone = CBF_IHA("CBF-İHA")
 cbf_drone.gorev_dongusu(sure=30)
 cbf_drone.ucus_sonu_analizi()
